@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+import subprocess
+
+import netfilterqueue
+
+
+def process_packet(packet):
+    print(packet)
+    packet.drop()
+
+
+try:
+    queueNum = input("Please enter the queue number ")
+    subprocess.call(['iptables', '-I', 'FORWARD', '-j', 'NFQUEUE', '--queue-num', queueNum])
+    queue = netfilterqueue.NetfilterQueue()
+    queue.bind(int(queueNum), process_packet)
+    queue.run()
+except KeyboardInterrupt:
+    print('Keyboard interrupt detected ... Restoring IP Tables')
+    subprocess.call(['iptables', '--flush'])
+# iptables -I FORWARD -j NFQUEUE --queue-num 0
