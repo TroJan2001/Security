@@ -36,6 +36,6 @@ except(KeyboardInterrupt):
     print('[+] Keyboard interrupt detected ... Resetting IP Tables')
     subprocess.call(['iptables', '--flush'])
 # iptables -I FORWARD -j NFQUEUE --queue-num 0
-# web server on kali command (service apache2 start)
+# web server start on kali command is (service apache2 start)
 # sudo systemctl enable systemd-resolved.service
 # sudo systemd-resolve --flush-caches
