@@ -4,6 +4,7 @@ from scapy.layers import http
 
 
 def sniff(interface):
+    # This sniff function is doing the packet sniffing and prn does the desired manipulation on the sniffed packet
     scapy.sniff(iface=interface, store=False, prn=process_sniffed_packet)
 
 
