@@ -29,5 +29,5 @@ def process_sniffed_packet(packet):
     if login_info:
         print('\n\n[+] Possible username/password > ' + login_info + '\n\n')
 
-
+# Sniff from the desired interface for example wlan0, eth0, ... etc
 sniff('wlan0')
