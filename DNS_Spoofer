@@ -28,7 +28,7 @@ def process_packet(packet):
 
 
 try:
-    # Start linux server
+    # Start Linux server
     subprocess.call(['service', 'apache2', 'start'])
     # Enter the queue number which you want to trap packets into
     queueNum = input("Please enter the queue number ")
@@ -45,7 +45,7 @@ try:
 except(KeyboardInterrupt):
     print('[+] Keyboard interrupt detected ... Resetting IP Tables')
     subprocess.call(['iptables', '--flush'])
-    # Stop linux server
+    # Stop Linux server
     subprocess.call(['service', 'apache2', 'stop'])
     
 # ///// Some commands we used or might be using
