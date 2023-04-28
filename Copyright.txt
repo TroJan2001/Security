@@ -1,1 +1,0 @@
-Copyright : some of these tools where partly modified and improved of the basic edition of the course https://www.udemy.com/course/learn-python-and-ethical-hacking-from-scratch/ and some where used as it is
